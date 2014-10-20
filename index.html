@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang=en>
+  <meta charset=utf-8>
+  <meta name=viewport content="initial-scale=1, minimum-scale=1, width=device-width">
+  <title>Cramond Island Causeway</title>
+  <style>
+      *{margin:0;padding:0;box-sizing: border-box;font:400 1em sans-serif;}
+      body {text-align:center;}
+      header {padding:0;position:fixed;top:0;left:0;right:0;height:9em;z-index:2;background: #fff;}
+      .title-bar {background:#222;width:100%;padding:0 4%;height:4em;text-align:left;}
+      .title-bar h1 {font-size:1.5em;color:#fff;text-align:left;padding-top:.5em;}
+      .title-bar h1 small {font-size:.5em;display: block}
+      #day {padding:.5em 0 0 0;font-size: 2em;}
+      #clock {position:relative;top:9em; z-index:1;border-top:1em solid #fff;}
+      #clock ul:after {position:absolute;top:0;bottom:0;content:'';left:6%;border-left:1px solid #000;margin-left:15px}
+      #clock li {height:5px;padding-left:5%;text-align: left;position:relative;font-weight:900}
+      #clock li:nth-child(3n) {border-bottom:1px solid rgba(99,99,99,0.1)}
+      #clock li:nth-child(4n + 1):before,
+      #clock li:first-child:before {position:absolute; display:block;content:'';width:4px;height:1px;background:black;top:0;left:6%;margin-left:12px}
+      .key-time {font-size:2em;}
+      #clock li span {position:absolute;display:block;width:6%;text-align:right;height:1em;z-index:2;top:-.25em;margin-top:-5px;left:0;}
+      .unsafe {/*box-shadow: 0px 0 2px #f00;*/background:rgba(180,0,0, 0.7);}
+      .safe {/*box-shadow: 0px 0 2px #090;*/ background:rgba(0,90,0,0.7);}
+      #hand {width:100%;border-top:1px solid #000;height:1px;position:absolute;top:0;}
+      #hand-time {font-size:2em;position:relative;top:-35px;z-index:2;}
+      .safe-time {display:block;}
+  </style>
+    <header>
+        <div class="title-bar">
+            <h1>Cramond Island Causeway <small>Estimated safe crossing times</small></h1>
+        </div>
+        <h1 id="day"></h1>
+        <div id="safe-times"></div>
+    </header>
+    <div id="clock">
+        <div id="hand"></div>
+    </div>
+<script src="cramondclock.js"></script>
