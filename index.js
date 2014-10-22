@@ -1,57 +1,37 @@
-/*global require, console*/
-var jade = require('jade'),
-    fs = require('fs'),
-    cramondTides = require('./cramondTides.js'),
-    dataFile = 'data/data.json',
-    tpl = 'template/template.jade',
-    dest = 'index.html',
-    data = {},
-    helpers = {
-        zeropad : function (n) {
-            return String('00'+n).substr(-2);
-        },
-        minutesToTime : function (n) {
-            return String(helpers.zeropad(helpers.minutesToHour(n))) + ':' + String(helpers.zeropad(n % 60));
-        },
-        minutesToHour : function (n) {
-            return Math.floor(n / 60);
-        }
-    };
+var http = require("http"),
+url = require("url"),
+path = require("path"),
+fs = require("fs")
+port = process.argv[2] || 8888;
 
+http.createServer(function(request, response) {
 
-function readData() {
-    fs.readFile(dataFile, function (err, jsondata) {
-        if (err) return console.error(err);
-        try {
-            data = JSON.parse(jsondata);
-            buildPage();
-        } catch (err2) {
-            return console.error(err2);
-        }
+  var uri = url.parse(request.url).pathname
+    , filename = path.join(process.cwd(), uri);
+
+  fs.exists(filename, function(exists) {
+    if(!exists) {
+      response.writeHead(404, {"Content-Type": "text/plain"});
+      response.write("404 Not Found\n");
+      response.end();
+      return;
+    }
+
+    if (fs.statSync(filename).isDirectory()) filename += '/index.html';
+
+    fs.readFile(filename, "binary", function(err, file) {
+      if(err) {        
+        response.writeHead(500, {"Content-Type": "text/plain"});
+        response.write(err + "\n");
+        response.end();
+        return;
+      }
+
+      response.writeHead(200);
+      response.write(file, "binary");
+      response.end();
     });
-}
+  });
+}).listen(parseInt(port, 10));
 
-function buildPage () {
-    fs.readFile(tpl, 'utf8', function (err, tplfile) {
-        if (err) throw err;
-        try {
-              var template = jade.compile(tplfile, {filename: tpl});
-              fs.writeFile(dest, template({days: data}), function (err) {
-                if (!err) {
-                    console.log('success');
-                } else {
-                    console.error(err);
-                }
-              });
-            } catch (e) {
-              console.error(e);
-            }
-    });
-}
-
-(function () {
-    cramondTides(dataFile, function (err) {
-        if (err) console.log(err);
-        readData();
-    });
-}());
+console.log("Static file server running at\n  => http://localhost:" + port + "/\nCTRL + C to shutdown");
