@@ -1,13 +1,13 @@
 var http = require("http"),
-url = require("url"),
-path = require("path"),
-fs = require("fs")
-port = process.argv[2] || 8888;
+    url = require("url"),
+    path = require("path"),
+    fs = require("fs"),
+    port = process.env.PORT || 3000;
 
 http.createServer(function(request, response) {
 
-  var uri = url.parse(request.url).pathname
-    , filename = path.join(process.cwd(), uri);
+  var uri = url.parse(request.url).pathname,
+      filename = path.join(process.cwd(), uri);
 
   fs.exists(filename, function(exists) {
     if(!exists) {
@@ -32,6 +32,6 @@ http.createServer(function(request, response) {
       response.end();
     });
   });
-}).listen(parseInt(port, 10));
+}).listen(port);
 
 console.log("Static file server running at\n  => http://localhost:" + port + "/\nCTRL + C to shutdown");
