@@ -1,4 +1,11 @@
 {
+  "dependencies" : {
+    "cheerio" : "*",
+    "jade" : "*",
+    "request" : "*",
+    "fs" : "*",
+    "moment" : "*"
+  },
   "devDependencies": {
     "gulp": "^3.8.5",
     "gulp-concat": "^2.3.4",

@@ -1,5 +1,5 @@
 #! /app/bin/node
-/*global require, console
+/*global require, console*/
 var jade = require('jade'),
     fs = require('fs'),
     cramondTides = require('../cramondTides.js'),
@@ -57,5 +57,3 @@ function buildPage () {
         readData();
     });
 }());
-*/
-console.log('Boom');
