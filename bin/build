@@ -1,6 +1,5 @@
 #! /app/bin/node
 /*global require, console*/
-/*
 var jade = require('jade'),
     fs = require('fs'),
     cramondTides = require('../cramondTides.js'),
@@ -41,7 +40,7 @@ function buildPage () {
               var template = jade.compile(tplfile, {filename: tpl});
               fs.writeFile(dest, template({days: data}), function (err) {
                 if (!err) {
-                    console.log('success');
+                    console.log('build successful');
                 } else {
                     console.error(err);
                 }
@@ -58,5 +57,3 @@ function buildPage () {
         readData();
     });
 }());
-*/
-console.log('Here be dragons...');
