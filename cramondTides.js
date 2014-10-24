@@ -36,7 +36,6 @@ var cramondTides = function (dataFile, cb) {
             tmp.safe = [];
             tmp.safeMins = [];
             tmp.lowtides.forEach(function (t) {
-                //console.log(getTimeRangeArray(t));
                 tmp.safeMins.push(getTimeRangeArray(t));
             });
 
@@ -85,26 +84,6 @@ function writeFile(file, obj, options, callback) {
       if (callback) return callback(err, null);
     }
     fs.writeFile(file, str, options, callback);
-}
-
-function readFile(file, options, callback) {
-  if (callback === undefined) {
-    callback = options;
-    options = null;
-  }
-
-  fs.readFile(file, options, function(err, data) {
-    if (err) return callback(err, null);
-
-    var obj = null;
-    try {
-      obj = JSON.parse(data);
-    } catch (err2) {
-      return callback(err2, null);
-    }
-
-    callback(null, obj);
-  });
 }
 
 module.exports = cramondTides;
