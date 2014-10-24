@@ -33,7 +33,7 @@ function readData() {
 }
 
 function buildPage () {
-    console.log(data);
+    console.log('data:' + data);
     fs.readFile(tpl, 'utf8', function (err, tplfile) {
         if (err) throw err;
         try {
