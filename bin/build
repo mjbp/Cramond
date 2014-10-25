@@ -3,9 +3,9 @@
 var jade = require('jade'),
     fs = require('fs'),
     cramondTides = require('../cramondTides.js'),
-    dataFile = '../data/data.json',
-    tpl = '../template/template.jade',
-    dest = '../index.html',
+    dataFile = 'data/data.json',
+    tpl = 'template/template.jade',
+    dest = 'index.html',
     data = {},
     helpers = {
         zeropad : function (n) {
