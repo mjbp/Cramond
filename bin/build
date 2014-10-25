@@ -1,4 +1,4 @@
-#! /app/bin/node
+#!/usr/bin/env node
 /*global require, console*/
 var jade = require('jade'),
     fs = require('fs'),
