@@ -5,6 +5,8 @@ var request = require('request'),
     fs = require('fs'),
     url = 'http://www.thebeachguide.co.uk/south-scotland/lothian/cramond-weather.htm',
     data = [],
+    weekMinuteMarks = [],
+    week = [],
     days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
     timeHelper = {
         zeropad : function (n) {
@@ -26,26 +28,32 @@ var cramondTides = function (dataFile, cb) {
     request(url, function (err, resp, body) {
         if (err) return cb(err);
         var $ = cheerio.load(body),
-            tmp;
+            tmp,
+            times = [];
         $('#tideTable td ul').each(function(i, day) {
             //Scrape the tide page and extract the low tide times for each day
             //Beware here be dragons..
-            tmp = { day: days[i],
-                    lowtides: convertArrayTimesTo24hrs($(this).text().replace(/\(.*?\)/g, '').replace(/(High \d+:\d+[a|p]m)+/g, '').replace(/(Low )/g, '').match(/.{1,7}/g))
+            tmp = { title: days[i],
+                    lowtides: cleanTimes($(this).text().replace(/\(.*?\)/g, '').replace(/(High \d+:\d+[a|p]m)+/g, '').replace(/(Low )/g, '').match(/.{1,7}/g))
                   };
-            tmp.safe = [];
-            tmp.safeMins = [];
             tmp.lowtides.forEach(function (t) {
-                tmp.safeMins.push(getTimeRangeArray(t));
+                //safe time = 2 hours either side of low tide
+                weekMinuteMarks = weekMinuteMarks.concat([~~convert24TimeStringToWeekMins(t, i) - 120, ~~convert24TimeStringToWeekMins(t, i) + 120]);
             });
-
-            tmp.safeMins.forEach(function (t) {
-                tmp.safe.push([timeHelper.minutesToTime(t[0]), timeHelper.minutesToTime(t[1])]);
-            });
-            tmp.safeMins = tmp.safeMins[0].concat(tmp.safeMins[1]);
             data.push(tmp);
+            
         });
-
+        times = buildWeekTimes();
+        data.forEach(function (day, i) {
+            day.times = times[i];
+            day.safeTimeStrings = [];
+            day.lowtides.forEach(function(t){
+                day.safeTimeStrings.push(getDisplayTimes(t));
+            });
+            
+            delete day.lowtides;
+        });
+        
         writeFile(dataFile, data, function (err, data) {
             if (err) cb(err);
             cb();
@@ -53,22 +61,49 @@ var cramondTides = function (dataFile, cb) {
     });
 };
 
-function getTimeRangeArray(t) {
-    var shr, ehr, hr = t.substr(0, 2);
-    shr = +hr - 2 >= 0 ? +hr - 2 : 24 + (+hr - 2);
-    ehr = +hr + 2 <= 24 ? +hr + 2 : 24 - (+hr + 2);
-
-    return [(shr * 60) + ~~(t.substr(-2)), (ehr * 60) + ~~(t.substr(-2))];
+function buildWeekTimes() {
+    var onOff = ['unsafe', 'safe'],
+        s = 0,
+        r = [],
+        count = 0,
+        tmp;
+    
+    for (var i = 1440, j = 0; i <= (1440 * 7); i += 1440) {
+        tmp = {};
+        tmp[0] = onOff[(count % 2)];
+        weekMinuteMarks.forEach(function(m) {
+            if (m <= i && m >= (i - 1440)) {
+                count++;
+                tmp[m - (j * 1440)] = onOff[(count % 2)];
+            }
+        });
+        j++;
+        r.push(tmp);
+    }
+    return r;
 }
 
-function convertArrayTimesTo24hrs (times) {
+function cleanTimes (times) {
     var r = [];
     times.forEach(function (t, i) {
-        r[i] = t.substr(-2) === 'am' ? t.substr(0, 5) : String(+t.substr(0, 2) + 12 + t.substr(2, 3));
+        r[i] = t.substr(-2) === 'am' ? 
+                t.substr(0, 2) === String(12) ? '00' + t.substr(2, 3) : 
+                    t.substr(0, 5) : String(+t.substr(0, 2) + 12 + t.substr(2, 3));
     });
     return r;
 }
 
+function convert24TimeStringToWeekMins(t, i) {
+    return (~~(t.substr(0, 2) * 60) + (i * 1440)) + ~~(t.substr(-2));
+}
+
+function getDisplayTimes(t) {
+    var shr, ehr, hr = t.substr(0, 2);
+    shr = +hr - 2 >= 0 ? +hr - 2 : 24 + (+hr - 2);
+    ehr = +hr + 2 < 24 ? +hr + 2 : (+hr + 2) - 24;
+
+    return [timeHelper.zeropad(shr) + t.substr(-3), timeHelper.zeropad(ehr) + t.substr(-3)];
+}
 
 // Store in a file
 function writeFile(file, obj, options, callback) {

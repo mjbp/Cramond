@@ -15,8 +15,8 @@ html(lang="en")
       .clock {width:auto;display:block;position:relative;top:9.25em; z-index:1;border-top:1em solid #fff;}
       .clock ul {list-style:none;display:block;}
       .clock ul:after {position:absolute;top:0;bottom:0;content:'';left:7%;border-left:1px solid #000;margin-left:15px}
-      .clock li {height:.5em;padding-left:6%;text-align: left;position:relative;list-style:none;display:block;}
-      .clock li:nth-child(4n + 1):before,
+      .clock li {height:.1em;padding-left:6%;text-align: left;position:relative;list-style:none;display:block;}
+      .clock li:nth-child(15n + 1):before,
       .clock li:first-child:before {position:absolute; display:block;content:'';width:4px;height:1px;background:black;top:-1px;left:7%;margin-left:12px}
       .key-time {font-size:2em;}
       .clock li span {position:absolute;font-weight:900;display:block;width:7%;text-align:right;line-height:1.5em;height:1.5em;z-index:3;top:-.5em;margin-top:-5px;left:0;}
@@ -55,27 +55,27 @@ html(lang="en")
     button(class='button button-week', id='previousDay', data-action='previous', title='Previous Day')
       img(src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0OCIgaGVpZ2h0PSI0OCIgdmlld0JveD0iMCAwIDQ4IDQ4Ij4KICAgIDxwYXRoIGQ9Ik0zMC44MyAzMi42N2wtOS4xNy05LjE3IDkuMTctOS4xNy0yLjgzLTIuODMtMTIgMTIgMTIgMTJ6Ii8+CiAgICA8cGF0aCBkPSJNMC0uNWg0OHY0OGgtNDh6IiBmaWxsPSJub25lIi8+Cjwvc3ZnPgo=')
   -var i = 0
+  -var liClass = 'unsafe'
   each item in days
     -i++
     div(class=(i !== 1 ? 'day day-off' : 'day day-on'))
       div.header-day
-        h1 #{item.day}
-        each time in item.safe
+        h1 #{item.title}
+        each time in item.safeTimeStrings
           div.safe-times #{time[0]} - #{time[1]}
       div.clock(tabindex='-1')
         div.hand
-        -var n = 0, safeindex = 0
+        -var n = 0
         ul
           while n < 1440
-            -if (safeindex < item.safeMins.length && n >= ~~(item.safeMins[safeindex])) ++safeindex
-            -var liClass = safeindex % 2 === 0 ? 'unsafe' : 'safe'
+            -liClass = item.times[String(n)] || liClass
             if (n % 60) === 0
               li(class=liClass)
                 -var spanClass = (Math.floor(n / 60)) % 6 === 0 ? 'key-time' : '';
                 span(class=spanClass)= (Math.floor(n / 60) === 0 ? 12 : Math.floor(n / 60))
             else
               li(class=liClass)
-            -n+=5
+            -n+=1
   div.modal
     h1 What is this?
     p This is a demo/proof of concept application and <b>should not be used as the sole guide for planning a trip to Cramond Island</b>. Crossing times are estimated based on the low tide times at the port of Leith. Always check the safe crossing times on the noticeboard at the causeway.
