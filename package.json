@@ -3,7 +3,6 @@
     "cheerio" : "*",
     "jade" : "*",
     "request" : "*",
-    "fs" : "*",
     "moment" : "*"
   },
   "devDependencies": {
