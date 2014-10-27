@@ -20,7 +20,7 @@ var request = require('request'),
         }
     };
 
-//sort it starting from today
+//sort the week, it starting from today
 days = days.slice(moment().day()).concat(days.slice(0, moment().day()));
 
 
@@ -105,7 +105,6 @@ function getDisplayTimes(t) {
     return [timeHelper.zeropad(shr) + t.substr(-3), timeHelper.zeropad(ehr) + t.substr(-3)];
 }
 
-// Store in a file
 function writeFile(file, obj, options, callback) {
     if (callback === undefined) {
       callback = options;
