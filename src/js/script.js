@@ -115,6 +115,7 @@
         }()),
         CRAMOND = {
             init : function () {
+                FastClick.attach(d.body);
                 clock.init();
                 modal.init();
             }
