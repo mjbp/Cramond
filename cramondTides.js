@@ -29,7 +29,8 @@ var cramondTides = function (dataFile, cb) {
         if (err) return cb(err);
         var $ = cheerio.load(body),
             tmp,
-            times = [];
+            times = [],
+            gradients = [];
         $('#tideTable td ul').each(function(i, day) {
             //Scrape the tide page and extract the low tide times for each day
             //Beware here be dragons..
@@ -43,9 +44,10 @@ var cramondTides = function (dataFile, cb) {
             data.push(tmp);
             
         });
-        times = buildWeekTimes();
+        gradients = buildLinearGradients(buildGradientArray());
+      
         data.forEach(function (day, i) {
-            day.times = times[i];
+            day.gradient = gradients[i];
             day.safeTimeStrings = [];
             day.lowtides.forEach(function(t){
                 day.safeTimeStrings.push(getDisplayTimes(t));
@@ -61,6 +63,60 @@ var cramondTides = function (dataFile, cb) {
     });
 };
 
+//Create an array of objects containing safe/unsafe time blocks based on percentage of the day
+function buildGradientArray() {
+    var safeUnsafe = ['unsafe', 'safe'],
+        r = [],
+        count = 0,
+        day = 1,
+        minsPerDay = 1440,
+        tmp = {};
+    tmp[0] = safeUnsafe[(count % 2)];
+    
+    weekMinuteMarks.forEach(function(m){
+        if (m >= (day * minsPerDay)) {
+          r.push(tmp);
+          day++;
+          tmp = {};
+          tmp[0] = safeUnsafe[(count % 2)];
+        }
+        tmp[Math.ceil(((m - ((day - 1) * minsPerDay)) / minsPerDay) * 100)] = safeUnsafe[(count % 2)];
+        count++;
+    });
+    r.push(tmp);
+    return r;
+}
+
+//Create an array of css stying strings for linear gradient
+function buildLinearGradients(times) {
+    var colours = ['rgba(180,0,0, 0.7)', 'rgba(0,90,0,0.7)'],
+        templateString = 'background-image: linear-gradient(to bottom, {{gradient}})',
+        r = [],
+        count = 0,
+        tmpStyleString = '';
+  
+    times.forEach(function(day) {
+        tmpStyleString = colours[count % 2] + ', ';
+        for (var timePercentage in day) {
+            //tmpStyleString = colours[count % 2] + ', ';
+            if (day.hasOwnProperty(timePercentage)) {
+              if(String(timePercentage) !== String(0)) {
+                  tmpStyleString += colours[count % 2] + ' ' + timePercentage + '%, ';
+                  count++;
+                  tmpStyleString += colours[count % 2] + ' ' + timePercentage + '%, ';
+              }
+            }
+        }
+        tmpStyleString += colours[count % 2] + ' 100%';
+        r.push(templateString.split('{{gradient}}').join(tmpStyleString));
+    });
+        
+    return r;
+}
+
+
+//Create an array of objects containing safe/unsafe time blocks in minutes
+//We don't use this function in the latest implementation
 function buildWeekTimes() {
     var onOff = ['unsafe', 'safe'],
         s = 0,

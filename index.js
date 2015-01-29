@@ -23,13 +23,14 @@ var http = require("http"),
 
 checkData(readData);
 
+//create the linear gradient string here and pass to each day
 function checkData (cb) {
     fs.stat(dataFile, function (err, stats) {
         if (err) console.log(err);
         var date = new Date(),
             today = String(date.getDate()) + String(date.getMonth()) + String(date.getFullYear()),
             mtime = String(stats.mtime.getDate()) + String(stats.mtime.getMonth()) + String(stats.mtime.getFullYear());
-        
+     
         if (mtime !== today) {
             cramondTides(dataFile, function (err) {
                 if (err) console.log(err);

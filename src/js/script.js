@@ -1,14 +1,9 @@
 /*global console, window, document*/
-/* Roadmap
- - dev -> production in gulp
- - add fastClick
-
-*/
 (function (d, w) {
 
     var clock = (function () {
             var face = d.querySelector('.day-on .clock'),
-                hand = d.querySelector('.day-on .hand'),
+                hand = d.querySelector('.day-on .clock-hand'),
                 days = [].slice.call(d.querySelectorAll('.day')),
                 current = 0,
                 date = new Date(),
@@ -52,7 +47,7 @@
 
                 hand.style.top = Math.round(clockHeight * fraction) + 'px';
 
-                hand.innerHTML = '<span class="hand-time">' + time.minutesToTime(minutes) + ':' + time.zeropad(seconds) + '</span>';
+                hand.innerHTML = '<span class="clock-hand-time">' + time.minutesToTime(minutes) + ':' + time.zeropad(seconds) + '</span>';
 
                 timer = w.setTimeout(tick, 1000);
                 if (typeof cb === 'function') {cb();}
