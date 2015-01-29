@@ -27,4 +27,4 @@ Requires a node environment
 2. 'npm install' for all dependencies
 3. push to heroku or to run locally 'node index.js'
 
-If you want to edit the frontend, the cs and html are inlined in a jade template in /template. The source js files live in /src, runthe 'gulp js' task to concat and minify into the build (/js) dir.
+If you want to edit the frontend, the css and html are inlined in a jade template found in /template. The source js files live in /src, run the 'gulp js' task to concat and minify into the build (/js) dir.
