@@ -98,7 +98,6 @@ function buildLinearGradients(times) {
     times.forEach(function(day) {
         tmpStyleString = colours[count % 2] + ', ';
         for (var timePercentage in day) {
-            //tmpStyleString = colours[count % 2] + ', ';
             if (day.hasOwnProperty(timePercentage)) {
               if(String(timePercentage) !== String(0)) {
                   tmpStyleString += colours[count % 2] + ' ' + timePercentage + '%, ';
